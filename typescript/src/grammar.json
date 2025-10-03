@@ -8928,7 +8928,7 @@
     },
     "_type_query_member_expression_in_type_annotation": {
       "type": "PREC_LEFT",
-      "value": 0,
+      "value": 1,
       "content": {
         "type": "SEQ",
         "members": [
@@ -8943,13 +8943,17 @@
                   "name": "import"
                 },
                 {
-                  "type": "ALIAS",
+                  "type": "PREC_LEFT",
+                  "value": 2,
                   "content": {
-                    "type": "SYMBOL",
-                    "name": "_type_query_member_expression_in_type_annotation"
-                  },
-                  "named": true,
-                  "value": "member_expression"
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_type_query_member_expression_in_type_annotation"
+                    },
+                    "named": true,
+                    "value": "member_expression"
+                  }
                 },
                 {
                   "type": "ALIAS",
@@ -9637,7 +9641,7 @@
     },
     "_type_query_member_expression": {
       "type": "PREC_LEFT",
-      "value": 0,
+      "value": 1,
       "content": {
         "type": "SEQ",
         "members": [
@@ -9663,6 +9667,19 @@
                   },
                   "named": true,
                   "value": "subscript_expression"
+                },
+                {
+                  "type": "PREC_LEFT",
+                  "value": 2,
+                  "content": {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_type_query_member_expression"
+                    },
+                    "named": true,
+                    "value": "member_expression"
+                  }
                 },
                 {
                   "type": "ALIAS",
@@ -9716,7 +9733,7 @@
     },
     "_type_query_subscript_expression": {
       "type": "PREC_LEFT",
-      "value": 0,
+      "value": 1,
       "content": {
         "type": "SEQ",
         "members": [
@@ -9733,6 +9750,19 @@
                 {
                   "type": "SYMBOL",
                   "name": "this"
+                },
+                {
+                  "type": "PREC_LEFT",
+                  "value": 2,
+                  "content": {
+                    "type": "ALIAS",
+                    "content": {
+                      "type": "SYMBOL",
+                      "name": "_type_query_subscript_expression"
+                    },
+                    "named": true,
+                    "value": "subscript_expression"
+                  }
                 },
                 {
                   "type": "ALIAS",

@@ -691,10 +691,10 @@ module.exports = function defineGrammar(dialect) {
       // required beforehand. This allows for parsing of annotations such as
       // foo: import('x').y.z;
       // but was a nightmare to get working.
-      _type_query_member_expression_in_type_annotation: $ => prec.left(seq(
+      _type_query_member_expression_in_type_annotation: $ => prec.left(1, seq(
         field('object', choice(
           $.import,
-          alias($._type_query_member_expression_in_type_annotation, $.member_expression),
+          prec.left(2, alias($._type_query_member_expression_in_type_annotation, $.member_expression)),
           alias($._type_query_call_expression_in_type_annotation, $.call_expression),
         )),
         '.',
@@ -842,12 +842,12 @@ module.exports = function defineGrammar(dialect) {
       ),
 
       // Type query expressions are more restrictive than regular expressions
-      _type_query_member_expression: $ => prec.left(seq(
+      _type_query_member_expression: $ => prec.left(1, seq(
         field('object', choice(
           $.identifier,
           $.this,
           alias($._type_query_subscript_expression, $.subscript_expression),
-          // Removed self-reference to prevent infinite recursion during tree balancing
+          prec.left(2, alias($._type_query_member_expression, $.member_expression)),
           alias($._type_query_call_expression, $.call_expression),
         )),
         choice('.', '?.'),
@@ -856,11 +856,11 @@ module.exports = function defineGrammar(dialect) {
           alias($.identifier, $.property_identifier),
         )),
       )),
-      _type_query_subscript_expression: $ => prec.left(seq(
+      _type_query_subscript_expression: $ => prec.left(1, seq(
         field('object', choice(
           $.identifier,
           $.this,
-          // Removed self-reference to prevent infinite recursion during tree balancing
+          prec.left(2, alias($._type_query_subscript_expression, $.subscript_expression)),
           alias($._type_query_member_expression, $.member_expression),
           alias($._type_query_call_expression, $.call_expression),
         )),
