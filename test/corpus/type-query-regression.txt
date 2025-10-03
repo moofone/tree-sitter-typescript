@@ -1,0 +1,255 @@
+==================
+Type query with ReturnType and typeof (regression test)
+==================
+
+interface LoggerInstance {
+  debug: ReturnType<typeof vi.fn>;
+  info: ReturnType<typeof vi.fn>;
+  warn: ReturnType<typeof vi.fn>;
+  error: ReturnType<typeof vi.fn>;
+}
+
+---
+
+(program
+  (interface_declaration
+    name: (type_identifier)
+    body: (interface_body
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier)))))))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier)))))))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier)))))))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier))))))))))
+
+==================
+Complex nested member expressions
+==================
+
+type T1 = typeof obj.prop.nested;
+type T2 = typeof this.method.result;
+
+---
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (member_expression
+        object: (member_expression
+          object: (identifier)
+          property: (property_identifier))
+        property: (property_identifier))))
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (member_expression
+        object: (member_expression
+          object: (this)
+          property: (property_identifier))
+        property: (property_identifier)))))
+
+==================
+Nested object access
+==================
+
+type Obj = typeof foo.bar.baz.qux;
+
+---
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (member_expression
+        object: (member_expression
+          object: (member_expression
+            object: (identifier)
+            property: (property_identifier))
+          property: (property_identifier))
+        property: (property_identifier)))))
+
+==================
+Optional chaining in type queries
+==================
+
+type T = typeof obj?.prop;
+
+---
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (member_expression
+        object: (identifier)
+        property: (property_identifier)))))
+
+==================
+Array subscript in type queries
+==================
+
+type T = typeof arr[0];
+
+---
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (subscript_expression
+        object: (identifier)
+        index: (number)))))
+
+==================
+Call expression with import in type query
+==================
+
+type T = typeof import("module").default;
+
+---
+
+(program
+  (type_alias_declaration
+    name: (type_identifier)
+    value: (type_query
+      (member_expression
+        object: (call_expression
+          function: (import)
+          arguments: (arguments
+            (string
+              (string_fragment))))
+        property: (property_identifier)))))
+
+==================
+Real-world vitest mock interface (full reproduction)
+==================
+
+interface LoggerInstance {
+  debug: ReturnType<typeof vi.fn>;
+  info: ReturnType<typeof vi.fn>;
+  warn: ReturnType<typeof vi.fn>;
+  error: ReturnType<typeof vi.fn>;
+}
+
+const mockLogger: LoggerInstance = {
+  debug: vi.fn(),
+  info: vi.fn(),
+  warn: vi.fn(),
+  error: vi.fn(),
+};
+
+---
+
+(program
+  (interface_declaration
+    name: (type_identifier)
+    body: (interface_body
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier)))))))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier)))))))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier)))))))
+      (property_signature
+        name: (property_identifier)
+        type: (type_annotation
+          (generic_type
+            name: (type_identifier)
+            type_arguments: (type_arguments
+              (type_query
+                (member_expression
+                  object: (identifier)
+                  property: (property_identifier)))))))))
+  (lexical_declaration
+    (variable_declarator
+      name: (identifier)
+      type: (type_annotation
+        (type_identifier))
+      value: (object
+        (pair
+          key: (property_identifier)
+          value: (call_expression
+            function: (member_expression
+              object: (identifier)
+              property: (property_identifier))
+            arguments: (arguments)))
+        (pair
+          key: (property_identifier)
+          value: (call_expression
+            function: (member_expression
+              object: (identifier)
+              property: (property_identifier))
+            arguments: (arguments)))
+        (pair
+          key: (property_identifier)
+          value: (call_expression
+            function: (member_expression
+              object: (identifier)
+              property: (property_identifier))
+            arguments: (arguments)))
+        (pair
+          key: (property_identifier)
+          value: (call_expression
+            function: (member_expression
+              object: (identifier)
+              property: (property_identifier))
+            arguments: (arguments)))))))

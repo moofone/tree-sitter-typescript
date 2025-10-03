@@ -842,12 +842,12 @@ module.exports = function defineGrammar(dialect) {
       ),
 
       // Type query expressions are more restrictive than regular expressions
-      _type_query_member_expression: $ => seq(
+      _type_query_member_expression: $ => prec.left(seq(
         field('object', choice(
           $.identifier,
           $.this,
           alias($._type_query_subscript_expression, $.subscript_expression),
-          alias($._type_query_member_expression, $.member_expression),
+          // Removed self-reference to prevent infinite recursion during tree balancing
           alias($._type_query_call_expression, $.call_expression),
         )),
         choice('.', '?.'),
@@ -855,18 +855,18 @@ module.exports = function defineGrammar(dialect) {
           $.private_property_identifier,
           alias($.identifier, $.property_identifier),
         )),
-      ),
-      _type_query_subscript_expression: $ => seq(
+      )),
+      _type_query_subscript_expression: $ => prec.left(seq(
         field('object', choice(
           $.identifier,
           $.this,
-          alias($._type_query_subscript_expression, $.subscript_expression),
+          // Removed self-reference to prevent infinite recursion during tree balancing
           alias($._type_query_member_expression, $.member_expression),
           alias($._type_query_call_expression, $.call_expression),
         )),
         optional('?.'),
         '[', field('index', choice($.predefined_type, $.string, $.number)), ']',
-      ),
+      )),
       _type_query_call_expression: $ => seq(
         field('function', choice(
           $.import,
