@@ -691,10 +691,10 @@ module.exports = function defineGrammar(dialect) {
       // required beforehand. This allows for parsing of annotations such as
       // foo: import('x').y.z;
       // but was a nightmare to get working.
-      _type_query_member_expression_in_type_annotation: $ => prec.left(1, seq(
+      _type_query_member_expression_in_type_annotation: $ => seq(
         field('object', choice(
           $.import,
-          prec.left(2, alias($._type_query_member_expression_in_type_annotation, $.member_expression)),
+          prec.left(1, alias($._type_query_member_expression_in_type_annotation, $.member_expression)),
           alias($._type_query_call_expression_in_type_annotation, $.call_expression),
         )),
         '.',
@@ -702,7 +702,7 @@ module.exports = function defineGrammar(dialect) {
           $.private_property_identifier,
           alias($.identifier, $.property_identifier),
         )),
-      )),
+      ),
       _type_query_call_expression_in_type_annotation: $ => seq(
         field('function', choice(
           $.import,
@@ -842,12 +842,12 @@ module.exports = function defineGrammar(dialect) {
       ),
 
       // Type query expressions are more restrictive than regular expressions
-      _type_query_member_expression: $ => prec.left(1, seq(
+      _type_query_member_expression: $ => seq(
         field('object', choice(
           $.identifier,
           $.this,
           alias($._type_query_subscript_expression, $.subscript_expression),
-          prec.left(2, alias($._type_query_member_expression, $.member_expression)),
+          prec.left(1, alias($._type_query_member_expression, $.member_expression)),
           alias($._type_query_call_expression, $.call_expression),
         )),
         choice('.', '?.'),
@@ -855,18 +855,18 @@ module.exports = function defineGrammar(dialect) {
           $.private_property_identifier,
           alias($.identifier, $.property_identifier),
         )),
-      )),
-      _type_query_subscript_expression: $ => prec.left(1, seq(
+      ),
+      _type_query_subscript_expression: $ => seq(
         field('object', choice(
           $.identifier,
           $.this,
-          prec.left(2, alias($._type_query_subscript_expression, $.subscript_expression)),
+          prec.left(1, alias($._type_query_subscript_expression, $.subscript_expression)),
           alias($._type_query_member_expression, $.member_expression),
           alias($._type_query_call_expression, $.call_expression),
         )),
         optional('?.'),
         '[', field('index', choice($.predefined_type, $.string, $.number)), ']',
-      )),
+      ),
       _type_query_call_expression: $ => seq(
         field('function', choice(
           $.import,

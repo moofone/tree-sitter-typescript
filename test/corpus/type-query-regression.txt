@@ -130,10 +130,11 @@ type T = typeof arr[0];
 (program
   (type_alias_declaration
     name: (type_identifier)
-    value: (type_query
-      (subscript_expression
-        object: (identifier)
-        index: (number)))))
+    value: (lookup_type
+      (type_query
+        (identifier))
+      (literal_type
+        (number)))))
 
 ==================
 Call expression with import in type query
@@ -253,4 +254,3 @@ const mockLogger: LoggerInstance = {
               object: (identifier)
               property: (property_identifier))
             arguments: (arguments)))))))
-
