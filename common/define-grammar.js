@@ -691,10 +691,10 @@ module.exports = function defineGrammar(dialect) {
       // required beforehand. This allows for parsing of annotations such as
       // foo: import('x').y.z;
       // but was a nightmare to get working.
-      _type_query_member_expression_in_type_annotation: $ => seq(
+      _type_query_member_expression_in_type_annotation: $ => prec.left(seq(
         field('object', choice(
           $.import,
-          alias($._type_query_member_expression_in_type_annotation, $.member_expression),
+          // Removed self-reference to prevent infinite recursion during tree balancing
           alias($._type_query_call_expression_in_type_annotation, $.call_expression),
         )),
         '.',
@@ -702,7 +702,7 @@ module.exports = function defineGrammar(dialect) {
           $.private_property_identifier,
           alias($.identifier, $.property_identifier),
         )),
-      ),
+      )),
       _type_query_call_expression_in_type_annotation: $ => seq(
         field('function', choice(
           $.import,
