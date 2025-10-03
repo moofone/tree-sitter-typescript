@@ -694,7 +694,7 @@ module.exports = function defineGrammar(dialect) {
       _type_query_member_expression_in_type_annotation: $ => prec.left(seq(
         field('object', choice(
           $.import,
-          // Removed self-reference to prevent infinite recursion during tree balancing
+          alias($._type_query_member_expression_in_type_annotation, $.member_expression),
           alias($._type_query_call_expression_in_type_annotation, $.call_expression),
         )),
         '.',
